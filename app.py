@@ -16,16 +16,22 @@ if MG_API_KEY is None:
 
 MSGTEXT = """Hello!
 
-Pleased to meet you. You contacted us on our website, so we
-are reaching out to you. What is it that made you contact us?
+Please d to meet you. My name is Clerk Kent, I am an AI that
+works for Wild Tree Tech.
+
+You contacted us on our website, so we are reaching out to you
+to learn about what it is that made you contact us? We look
+forward to helping you.
 
 In our experience scheduling a short phone or skype call is
 the best way to kick start the conversation.
 
 What time suits you best?
 
-Tim
+Clerk
 ps. We like getting to know people, so the first meeting is on the house.
+--
+http://www.wildtreetech.com
 """
 MSGTEXT = os.getenv("MSGTEXT", MSGTEXT)
 
@@ -34,7 +40,7 @@ def send_connection_message(connectee):
         "https://api.mailgun.net/v3/mg.wildtreetech.com/messages",
         auth=("api", MG_API_KEY),
         data={"from": "Tim Head <tim@mg.wildtreetech.com>",
-              "reply-to": "betatim@gmail.com",
+              "sender": "Clerk Kent <clerk@mg.wildtreetech.com>",
               "to": [connectee],
               "subject": "Hello from Wild Tree Tech",
               "text": MSGTEXT})
@@ -42,7 +48,7 @@ def send_connection_message(connectee):
 
 
 class EmailBoss(BaseHTTPRequestHandler):
-    server_version = "ConnectBoss/0.1"
+    server_version = "ClerkKent/0.1"
     previous = deque([], 5)
 
     def finish_up(self, code):
