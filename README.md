@@ -2,7 +2,7 @@
 
 :wave:
 
-Hi, I'm Clerk Kent. I am super at helping people meet each other.
+Hi, I'm Clerk Kent. I am super at at introducing people by email.
 
 
 # Setup
