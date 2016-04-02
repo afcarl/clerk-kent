@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 
 from cgi import FieldStorage
 from collections import deque
@@ -16,17 +17,22 @@ if MG_API_KEY is None:
 
 MSGTEXT = """Hello!
 
-Please d to meet you. My name is Clerk Kent, I am an AI that
+Pleased to meet you. My name is Clerk Kent, I am an AI that
 works for Wild Tree Tech.
 
-You contacted us on our website, so we are reaching out to you
-to learn about what it is that made you contact us? We look
-forward to helping you.
+We look forward to helping you. You contacted us on our
+website, so we are reaching out to you schedule a short
+phone or skype call to kick start the conversation.
 
-In our experience scheduling a short phone or skype call is
-the best way to kick start the conversation.
+What time suits you best? Wild Tree Tech's calendar is
+setup to show when we are free/busy:
 
-What time suits you best?
+http://bit.ly/wtt-calendar
+
+Feel free to send an invite along.
+
+If you have any further questions or comments, simply reply
+to this email.
 
 Clerk
 ps. We like getting to know people, so the first meeting is on the house.
@@ -35,14 +41,21 @@ http://www.wildtreetech.com
 """
 MSGTEXT = os.getenv("MSGTEXT", MSGTEXT)
 
-def send_connection_message(connectee):
+SUBJECTS = ["Hello from Wild Tree Tech",
+            "Scheduling a free meeting with Wild Tree Tech",
+            "Wild Tree Tech wanted to say hello!",
+            "Can Wild Tree Tech buy you a (virtual) coffee?",
+            "A note from Wild Tree Tech"]
+
+def send_connection_message(them):
     r = requests.post(
         "https://api.mailgun.net/v3/mg.wildtreetech.com/messages",
         auth=("api", MG_API_KEY),
         data={"from": "Tim Head <tim@mg.wildtreetech.com>",
+              "bcc": "Tim Head <tim@mg.wildtreetech.com>",
               "sender": "Clerk Kent <clerk@mg.wildtreetech.com>",
-              "to": [connectee],
-              "subject": "Hello from Wild Tree Tech",
+              "to": [them],
+              "subject": random.choice(SUBJECTS),
               "text": MSGTEXT})
     return r.status_code
 
@@ -53,7 +66,7 @@ class EmailBoss(BaseHTTPRequestHandler):
 
     def finish_up(self, code):
         self.send_response(code)
-        self.send_header('Access-Control-Allow-Origin', 'http://example.com')
+        self.send_header('Access-Control-Allow-Origin', 'http://www.wildtreetech.com')
         self.send_header('Connection', 'close')
         self.end_headers()
 
@@ -69,17 +82,17 @@ class EmailBoss(BaseHTTPRequestHandler):
                      'CONTENT_TYPE': self.headers['Content-Type']}
             )
 
-        connectee = form.getvalue('connectee')
-        if connectee is None:
+        them = form.getvalue('them')
+        if them is None:
             self.finish_up(500)
             return
 
         # only connect people we have not recently connected
         # silently swallow requests for reconnections
         status_code = 200
-        if connectee not in self.previous:
-            self.previous.append(connectee)
-            status_code = send_connection_message(connectee)
+        if them not in self.previous:
+            self.previous.append(them)
+            status_code = send_connection_message(them)
 
         self.finish_up(status_code)
 
