@@ -104,7 +104,7 @@ class EmailBoss(BaseHTTPRequestHandler):
 
 def run(server_class=HTTPServer, handler_class=EmailBoss):
     print("starting up")
-    server_address = ('', 5555)
+    server_address = ('', int(os.getenv('PORT', 5555)))
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
 
