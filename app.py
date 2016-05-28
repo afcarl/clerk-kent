@@ -71,6 +71,18 @@ class EmailBoss(BaseHTTPRequestHandler):
         self.send_header('Connection', 'close')
         self.end_headers()
 
+    def do_GET(self):
+        if self.path == '/hello':
+            self.send_response(200)
+            self.send_header('Content-type','text/html')
+            self.end_headers()
+            self.wfile.write("Hello World!")
+            return
+
+        else:
+            self.finish_up(404)
+            return
+
     def do_POST(self):
         if self.path != '/connect':
             self.finish_up(404)
