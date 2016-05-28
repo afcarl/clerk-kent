@@ -17,8 +17,8 @@ if MG_API_KEY is None:
 
 MSGTEXT = """Hello!
 
-Pleased to meet you. My name is Clerk Kent, I am an AI that
-works for Wild Tree Tech.
+Pleased to meet you. My name is Clerk Kent, I am an artificial
+intelligence bot that works for Wild Tree Tech.
 
 We look forward to helping you. You contacted us on our
 website, so we are reaching out to you schedule a short
@@ -29,7 +29,8 @@ setup to show when we are free/busy:
 
 http://bit.ly/wtt-calendar
 
-Feel free to send an invite along.
+Pick a time that suits you and reply to this email
+to schedule the meeting.
 
 If you have any further questions or comments, simply reply
 to this email.
@@ -51,8 +52,8 @@ def send_connection_message(them):
     r = requests.post(
         "https://api.mailgun.net/v3/mg.wildtreetech.com/messages",
         auth=("api", MG_API_KEY),
-        data={"from": "Tim Head <tim@mg.wildtreetech.com>",
-              "bcc": "Tim Head <tim@mg.wildtreetech.com>",
+        data={"from": "Tim Head <tim@wildtreetech.com>",
+              "bcc": "Tim Head <tim@wildtreetech.com>",
               "sender": "Clerk Kent <clerk@mg.wildtreetech.com>",
               "to": [them],
               "subject": random.choice(SUBJECTS),
@@ -62,7 +63,7 @@ def send_connection_message(them):
 
 class EmailBoss(BaseHTTPRequestHandler):
     server_version = "ClerkKent/0.1"
-    previous = deque([], 5)
+    previous = deque([], 1)
 
     def finish_up(self, code):
         self.send_response(code)
@@ -93,11 +94,16 @@ class EmailBoss(BaseHTTPRequestHandler):
         if them not in self.previous:
             self.previous.append(them)
             status_code = send_connection_message(them)
+            print("Emailed %s. MG code: %i", them, status_code)
+
+        else:
+            print("We recently emailed %s so skipping them.", them)
 
         self.finish_up(status_code)
 
 
 def run(server_class=HTTPServer, handler_class=EmailBoss):
+    print("starting up")
     server_address = ('', 5555)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
