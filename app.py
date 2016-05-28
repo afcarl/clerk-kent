@@ -67,7 +67,7 @@ class EmailBoss(BaseHTTPRequestHandler):
 
     def finish_up(self, code):
         self.send_response(code)
-        self.send_header('Access-Control-Allow-Origin', 'http://www.wildtreetech.com http://127.0.0.1')
+        self.send_header('Access-Control-Allow-Origin', 'http://www.wildtreetech.com')
         self.send_header('Connection', 'close')
         self.end_headers()
 
